@@ -1,9 +1,10 @@
 # Road Speed for AzerothCore
 
 A server-side AzerothCore module that gives players **25% faster running speed**
-on covered roads, trails, and paved areas between **Shadowglen and Dolanaar**
-in Teldrassil. The bonus applies outdoors, on foot, and out of combat.
-Players can use their existing WoW 3.3.5a clients.
+on covered outdoor roads, trails, and paved areas in the Eastern Kingdoms,
+Kalimdor, Outland, and Northrend. Cities and towns identified by the game's
+area flags also qualify, including their indoor areas. The bonus applies
+on foot and out of combat. Players can use their existing WoW 3.3.5a clients.
 
 ## Requirements
 
@@ -20,13 +21,14 @@ Replace the paths in angle brackets with paths on your machine.
 
 ```text
 go run "<this repo>/tools/extract_roads.go" -client "<clean client>" -out "<coverage output>"
-python tools/build_mask.py "<coverage output>/1" src/RoadMask.generated.h
+python tools/build_mask.py "<coverage output>" src/RoadMask.generated.h
 ```
 
 Leeroy derives road coverage from the game's terrain textures and bridge
-models. The generator crops that coverage to the pilot area and includes cells
-with a score of at least 32 out of 255. Client archives, extracted coverage,
-and the generated C++ header are local inputs.
+models. The generator packs tiles from all four overworld maps and includes
+cells with a score of at least 32 out of 255. Road coverage depends on how
+the terrain was painted. Client archives, extracted coverage, and the
+generated C++ header are local inputs.
 
 ## Install and enable
 
@@ -47,7 +49,7 @@ and the generated C++ header are local inputs.
 
 ## Verification
 
-On the staged realm, server packets showed **7.00 → 8.75 → 7.00 yards/sec**
+During the Teldrassil pilot, server packets showed **7.00 → 8.75 → 7.00 yards/sec**
 as the test character went from off-road terrain to a covered path and back.
 Entering combat suppressed the bonus. Sprint and mounting used their expected
 speeds, and a Playerbot followed the leader to the next checkpoint.

@@ -2,7 +2,7 @@
 
 #
 #    RoadSpeed.Enable
-#        Enable the Teldrassil road speed pilot.
+#        Enable the road, city, and town running-speed bonus.
 #        Default: 0 (disabled)
 #
 RoadSpeed.Enable = 0

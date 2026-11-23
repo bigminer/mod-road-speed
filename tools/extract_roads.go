@@ -19,9 +19,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	count, err := client.Roads(1, *outputPath)
-	if err != nil {
-		log.Fatal(err)
+	for _, mapID := range []int{0, 1, 530, 571} {
+		count, err := client.Roads(mapID, *outputPath)
+		if err != nil {
+			log.Fatalf("map %d: %v", mapID, err)
+		}
+		log.Printf("map %d: %d road tiles", mapID, count)
 	}
-	log.Printf("Kalimdor road tiles: %d", count)
 }

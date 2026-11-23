@@ -42,6 +42,28 @@ yards at the next path checkpoint. The test used selected locations and a
 headless 3.3.5a client. A complete on-foot playthrough with the graphical
 client and a regular party was outside this staged test.
 
+## Expanded coverage
+
+- Extract road tiles from the Eastern Kingdoms, Kalimdor, Outland, and
+  Northrend. Keep map IDs in tile keys so tiles at the same coordinates on
+  separate continents remain independent.
+- Treat areas flagged as capitals, city subareas, cities, or towns as
+  covered, including indoors. Preserve the outdoor requirement for
+  texture-based coverage. Exclude instanced maps and keep the existing
+  combat and movement restrictions.
+- Verify road-mask boundaries and coverage in each continent. On a test
+  realm, check an outdoor road, an off-road point, and city thresholds.
+  Include a neutral city such as Shattrath or Dalaran.
+
+The expanded generator packed 736 tiles from 796 extracted tiles. The packed
+mask matched every source tile at the selected cutoff. Both module translation
+units compiled with `-DNOPCH=1`, and the expanded worldserver image built.
+
+The isolated realm reported 8.75 yards/sec at all ten capital checkpoints
+and at Booty Bay and Dolanaar. An outdoor road checkpoint outside the original
+pilot also reported 8.75 yards/sec. Nearby uncovered terrain reported 7.00
+yards/sec before and after that checkpoint.
+
 ## Contribution checks
 
 Use the standalone module layout. Compile with `-DNOPCH=1` and verify both

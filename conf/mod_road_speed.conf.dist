@@ -1,0 +1,8 @@
+[worldserver]
+
+#
+#    RoadSpeed.Enable
+#        Enable the Teldrassil road speed pilot.
+#        Default: 0 (disabled)
+#
+RoadSpeed.Enable = 0

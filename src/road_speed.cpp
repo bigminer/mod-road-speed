@@ -1,4 +1,5 @@
 #include "RoadMask.generated.h"
+#include "road_speed_notice.h"
 
 #include "Config.h"
 #include "DBCStores.h"
@@ -24,6 +25,7 @@ std::atomic<bool> Enabled{false};
 struct RoadCheckTimer : DataMap::Base
 {
     uint32 Remaining = 0;
+    RoadSpeedNotice Notice;
 };
 
 bool IsCovered(uint32 map, float x, float y)
@@ -73,9 +75,7 @@ public:
 
     void OnPlayerUpdate(Player* player, uint32 elapsed) override
     {
-        if (!Enabled.load() || !player->IsInWorld() || player->GetMap()->Instanceable()
-            || !player->IsAlive() || player->IsInCombat() || player->IsMounted() || player->IsInWater()
-            || player->IsFlying() || player->IsInFlight() || player->GetVehicle() || player->IsBeingTeleported())
+        if (!player->IsInWorld())
         {
             if (player->HasAura(RoadSpeedSpell))
                 player->RemoveAura(RoadSpeedSpell);
@@ -83,19 +83,31 @@ public:
         }
 
         auto* timer = player->CustomData.GetDefault<RoadCheckTimer>("RoadSpeed.CheckTimer");
-        if (timer->Remaining > elapsed)
+        if (!Enabled.load() || player->GetMap()->Instanceable()
+            || !player->IsAlive() || player->IsInCombat() || player->IsMounted() || player->IsInWater()
+            || player->IsFlying() || player->IsInFlight() || player->GetVehicle() || player->IsBeingTeleported())
+        {
+            if (player->HasAura(RoadSpeedSpell))
+                player->RemoveAura(RoadSpeedSpell);
+        }
+        else if (timer->Remaining > elapsed)
         {
             timer->Remaining -= elapsed;
-            return;
         }
-        timer->Remaining = SampleInterval;
+        else
+        {
+            timer->Remaining = SampleInterval;
+            bool const covered = IsCityOrTown(player->GetZoneId()) || IsCityOrTown(player->GetAreaId())
+                || (IsCovered(player->GetMapId(), player->GetPositionX(), player->GetPositionY()) && player->IsOutdoors());
+            if (covered && !player->HasAura(RoadSpeedSpell))
+                player->AddAura(RoadSpeedSpell, player);
+            else if (!covered && player->HasAura(RoadSpeedSpell))
+                player->RemoveAura(RoadSpeedSpell);
+        }
 
-        bool const covered = IsCityOrTown(player->GetZoneId()) || IsCityOrTown(player->GetAreaId())
-            || (IsCovered(player->GetMapId(), player->GetPositionX(), player->GetPositionY()) && player->IsOutdoors());
-        if (covered && !player->HasAura(RoadSpeedSpell))
-            player->AddAura(RoadSpeedSpell, player);
-        else if (!covered && player->HasAura(RoadSpeedSpell))
-            player->RemoveAura(RoadSpeedSpell);
+        bool const active = player->HasAura(RoadSpeedSpell);
+        if (timer->Notice.Update(active, elapsed))
+            player->SendSystemMessage(active ? "Road speed active: 25% running speed bonus." : "Road speed ended.");
     }
 };
 }

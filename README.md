@@ -5,6 +5,8 @@ on covered outdoor roads, trails, and paved areas in the Eastern Kingdoms,
 Kalimdor, Outland, and Northrend. Cities and towns identified by the game's
 area flags also qualify, including their indoor areas. The bonus applies
 on foot and out of combat. Players can use their existing WoW 3.3.5a clients.
+Players receive a private chat message when the bonus has been active or inactive
+for two seconds, reducing repeated messages at road boundaries.
 
 ## Requirements
 
